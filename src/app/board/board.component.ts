@@ -3,12 +3,13 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.css']
+  styleUrls: ['./board.component.css'],
 })
 export class BoardComponent implements OnInit {
   squares!: (string | null)[];
   xIsNext: boolean | undefined;
   winner: string | null = null;
+  gameOver: boolean = false;
 
   constructor() {}
 
@@ -20,6 +21,7 @@ export class BoardComponent implements OnInit {
     this.squares = Array(9).fill(null);
     this.winner = null;
     this.xIsNext = true;
+    this.gameOver = false;
   }
 
   get player() {
@@ -27,12 +29,16 @@ export class BoardComponent implements OnInit {
   }
 
   makeMove(idx: number) {
-    if (!this.squares[idx]) {
+    if (!this.squares[idx] && !this.gameOver) {
       this.squares.splice(idx, 1, this.player);
       this.xIsNext = !this.xIsNext;
-    }
+      this.winner = this.calculateWinner();
 
-    this.winner = this.calculateWinner();
+      // Check if the game is over after this move
+      if (this.winner) {
+        this.gameOver = true;
+      }
+    }
   }
 
   calculateWinner() {
@@ -44,7 +50,7 @@ export class BoardComponent implements OnInit {
       [1, 4, 7],
       [2, 5, 8],
       [0, 4, 8],
-      [2, 4, 6]
+      [2, 4, 6],
     ];
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
